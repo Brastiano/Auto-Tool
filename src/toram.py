@@ -4,6 +4,9 @@ import keyboard
 import time
 import threading
 
+# PATHS
+IMAGES = 'images/toram/'
+
 # TOOL CONTROL KEYS BINDING
 START_KEY = '`'
 STOP_KEY = '`'
@@ -34,6 +37,7 @@ CHARACTER_KEY = 'p'
 INVENTORY_KEY = 'i'
 STORE_KEY = 'k'
 SETTING_KEY = 'o'
+INTERACT_KEY = 'f'
 
 # SKILL DURATIONS
 BLIZZARD_DURATION = 10
@@ -41,8 +45,8 @@ STORM_DURATION = 5
 CHARGE_DURATION = 4
 FAMILIA_DURATION = 2
 
-class AutoFarmingToram:
 
+class AutoFarmingToram:
     RECHARGE_AFTER = 12
 
     TERMINATE = False
@@ -71,22 +75,31 @@ class AutoFarmingToram:
         terminate_thread.start()
 
         while not self.TERMINATE:
+
+            # Check for full inventory
+            # if self.is_inventory_full():
+            #     self.go_to_guild_bar()
+            #     self.navigate_guild_bar()
+            #     self.sell_collectibles()
+            #     self.leave_guild_bar()
+
+            # Perform farming actions
             pyautogui.press(self.FAMILIA_KEY)
             self.sleep(FAMILIA_DURATION)
             for attempt in range(self.RECHARGE_AFTER):
                 self.rotate((500, 540), (1100, 540), 0.5)
-                pyautogui.press(self.BLIZZARD_KEY)
+                pyautogui.press(INTERACT_KEY)
                 pyautogui.press(self.BLIZZARD_KEY)
                 self.sleep(BLIZZARD_DURATION)
 
         terminate_thread.join()
 
     def focus_window(self, title):
-        window = pygetwindow.getWindowsWithTitle(title)[0]
-        if window:
+        try:
+            window = pygetwindow.getWindowsWithTitle(title)[0]
             window.activate()
-        else:
-            print("Window not found.")
+        except Exception:
+            print('Window not found.')
 
     def rotate(self, start, end, duration):
         pyautogui.moveTo(start)
@@ -94,6 +107,35 @@ class AutoFarmingToram:
         pyautogui.moveTo(end, duration=duration)
         pyautogui.mouseUp(button='right')
         time.sleep(0.5)
+
+    def is_inventory_full(self):
+        path = IMAGES + '....png'
+        try:
+            pyautogui.locateOnScreen(path, confidence=0.9)
+            return True
+        except Exception:
+            return False
+
+    def go_to_guild_bar(self):
+        pyautogui.press(TERMINAL_KEY)
+        time.sleep(0.5)
+        path = IMAGES + 'go-to-guild-bar-button.png'
+        try:
+            location = pyautogui.locateOnScreen(path, confidence=0.9)
+            print('Navigating to guild bar...')
+            pyautogui.click(location)
+        except Exception:
+            print('Failed to navigate to guild bar')
+            print(f'Check for reference image at \'{path}\'.')
+
+    def leave_guild_bar(self):
+        pass
+
+    def navigate_guild_bar(self):
+        pass
+
+    def sell_collectibles(self):
+        pass
 
     def terminate(self, key):
         print(f'Press {key} to terminate.')
