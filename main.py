@@ -2,14 +2,17 @@
 import time
 
 # Scripts
-from src.toram import AutoFarmingToram
+from src import toram
+from src import simplemmo
 
 if __name__ == '__main__':
 
     print('Script starts running...`')
     start = time.time()
 
-    auto = AutoFarmingToram()
+    # auto = toram.AutoFarmingToram()
+    auto = simplemmo.AutoProgress('light-mode')
+    # auto = simplemmo.AutoProgress('dark-mode')
     auto.run()
 
     end = time.time()
